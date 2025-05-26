@@ -54,6 +54,20 @@ VITE_APP_TITLE=Staging App
 
 ## 开发指南
 
+### 作为模板新建项目
+
+degit 它的名字是 "de-git" 的缩写，意为“去 Git 化”。
+
+它的主要目的是：从一个 Git 仓库下载文件，但不包括该仓库的 .git 历史记录。 换句话说，它只下载仓库的最新快照（也就是当前版本的文件内容）。
+
+```bash
+# my-new-project 为新项目名称
+npm install -g degit
+degit pidtfork/react my-new-project
+# or
+npx degit pidtfork/react my-new-project
+```
+
 ### 安装依赖
 
 ```bash
