@@ -1,0 +1,73 @@
+openapi: 3.0.3
+info:
+  title: 系统信息 API
+  description: 提供操作系统版本和CPU信息的接口
+  version: 1.0.0
+
+paths:
+  /os/version:
+    get:
+      operationId: getOsVersion
+      summary: 获取操作系统版本信息
+      responses:
+        '200':
+          description: 返回操作系统版本信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    description: 操作系统版本
+                required:
+                  - version
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /cpu/info:
+    get:
+      operationId: getCpuInfo
+      summary: 获取CPU信息
+      responses:
+        '200':
+          description: 返回CPU信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model:
+                    type: string
+                    description: CPU型号
+                  cores:
+                    type: integer
+                    description: CPU核心数
+                required:
+                  - model
+                  - cores
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  responses:
+    BadRequest:
+      description: 请求错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: 错误代码
+        message:
+          type: string
+          description: 错误消息

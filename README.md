@@ -179,7 +179,7 @@ $ tree ./src/components/ui
 |-- textarea.jsx
 |-- toggle-group.jsx
 |-- toggle.jsx
-`-- tooltip.jsx
+└-- tooltip.jsx
 
 0 directories, 46 files
 ```

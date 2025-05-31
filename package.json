@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node updateRoute.js && vite",
     "build": "node updateRoute.js && vite build",
-    "preview": "node updateRoute.js && vite preview"
+    "preview": "node updateRoute.js && vite preview",
+    "route": "zx ./tool/route.js",
+    "openapi": "zx ./tool/openapi.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
