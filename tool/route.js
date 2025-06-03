@@ -75,16 +75,6 @@ function getJsxFiles(dir, basePath = '') {
  * @returns {string} 配置文件内容
  */
 function generateConfigContent(files) {
-  const now = new Date();
-  const timestamp = now.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  });
-  
   // 生成 import 语句
   const imports = files.map(file => 
     `import ${file.componentName} from '${file.importPath}';`
@@ -98,7 +88,7 @@ function generateConfigContent(files) {
   const prefixComment = PREFIX ? `\n// 路由前缀: ${PREFIX}` : '';
   
   return `// 此文件由生成器自动创建，请勿手动修改
-// 生成时间: ${timestamp}${prefixComment}
+${prefixComment}
 ${imports}
 
 export const routes = [

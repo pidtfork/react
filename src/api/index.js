@@ -1,35 +1,33 @@
-import axios from "axios";
+// 此文件由生成器自动创建，请勿手动修改
+// 基于 OpenAPI 规范生成的 API 客户端汇总文件
 
-const http = axios.create({
-  // 使用 import.meta.env 访问环境变量
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/",
-  timeout: 5000,
-});
+import { makeApi, mergeApis, Zodios } from "@zodios/core";
+import config from "./config";
 
-// 查看所有环境变量
-console.log("查看所有环境变量");
-console.log(import.meta.env);
+// 动态导入所有生成的 OpenAPI 模块
+import osApi from "@/api/openapi/os";
 
-// 简单的请求拦截器
-http.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// 构建 endpoints 数组
+const endpoints = [
+  ...(config.apiPerfix.os ? mergeApis({ [config.apiPerfix.os]: osApi }) : makeApi(osApi)),
+];
+
+// 创建 Zodios 客户端实例
+const zoidiosClinet = new Zodios(config.BASE_URL, endpoints, config.config);
+
+// 应用配置钩子
+config.use(zoidiosClinet);
+
+// 统一的请求方法，通过 config.request 实现
+const request = (data,req) => {
+  if (data != undefined && typeof data != "object") {
+    throw "zodios request 请求参数错误"
   }
-  return config;
-});
+  return config.request(zoidiosClinet, {...data,...req})
+};
 
-// 简单的响应拦截器
-http.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    // if (error.response?.status === 401) {
-    //   // 处理未登录状态
-    //   localStorage.removeItem("token");
-    //   window.location.href = "/login";
-    // }
-    return Promise.reject(error);
-  }
-);
-
-export default http;
+// 导出 API 方法对象
+export const os = {
+  getCpuInfo: (data) => request( data, { method: "get", url: "/cpu/info" }),
+  getOsVersion: (data) => request( data, { method: "get", url: "/os/version" }),
+};

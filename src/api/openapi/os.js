@@ -6,7 +6,7 @@ export const schemas = {
   Error,
 };
 
-export const api = [
+export default [
   {
     method: "get",
     path: "/cpu/info",
