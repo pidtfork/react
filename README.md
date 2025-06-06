@@ -8,7 +8,7 @@
 - **前端框架：** React 19.x
 - **路由管理：** Wouter 3.x
 - **状态管理：** Zustand 5.x
-- **数据请求：** Axios
+- **数据请求：** Zodios/core 10.9.x
 - **样式解决方案：** TailwindCSS 4.x
 - **UI组件：** shadcn/ui 2.5.x
 - **工具库：** 
@@ -76,24 +76,14 @@ pnpm install
 
 ### 更新路由配置
 
-项目根目录下运行`updateRoute.js`脚本会自动将`./src/pages`目录下以大写开头的`.jsx`页面文件写入到`./src/routers/config.js`
-同时保留目录结构到路由配置文件，默认将`Home.jsx`转换为根路径`/`
-在启动开发服务器、构建生产版本、预览生产构建均会自动先执行更新路由配置脚本
+```bash
+pnpm route
+```
+
+### 根据openapi文件生成api代码
 
 ```bash
-$ node ./updateRoute.js --help
-
-路由生成器 - 根据页面文件生成路由配置
-
-用法:
-  node generateRoute.js [选项]
-
-选项:
-  --root                 不将Home页面转换为根路径
-  --prefix <前缀>        为所有路由添加前缀
-  --pages-dir <目录>     指定页面目录路径 (默认: ./src/pages)
-  --output <文件路径>    指定输出配置文件路径 (默认: ./src/routes/config.js)
-  --help                显示此帮助信息
+pnpm openapi
 ```
 
 ### 添加shadcn组件

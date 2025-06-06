@@ -1,0 +1,35 @@
+请基于以下规范编写React:
+
+**架构原则**:
+- 永远不直接调用API，只调用Store方法
+- 使用 `createAPIStateHook()` 管理请求状态, 可传入自定义字段
+- 调用Store方法时可传入状态钩子: `store.method(data, apiState)`
+
+**状态钩子**:
+- 导入: `import createAPIStateHook from "@/hooks/apiHooks"`
+- 默认字段: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
+- 更新: `apiState.set(state => { state.field = value })`
+
+**组件模板**:
+```js
+function Component() {
+  const store = useStore();
+  const apiState = createAPIStateHook();
+  
+  const handleAction = async () => {
+    const { success } = await store.methodName(data, apiState);
+    if (success) {
+      // 成功处理
+    }
+  };
+  
+  return (
+    <div>
+      <button onClick={handleAction} disabled={apiState.loading}>
+        {apiState.loading ? "处理中..." : "操作"}
+      </button>
+      {apiState.error && <div>错误: {apiState.message}</div>}
+    </div>
+  );
+}
+```

@@ -1,0 +1,27 @@
+请基于以下API规范编写Zustand Store:
+
+**API调用规范**:
+- 导入: `import { apiModule, batch } from "@/api"` (apiModule为OpenAPI文件名)
+- 调用: `await apiModule.methodName(requestOptions, hookState)`
+- 参数: `{ data, params, queries, headers }` (遵循Zodios RequestOptions)
+- 返回: `{ success, data, error, message }`
+
+**Store要求**:
+- 使用 `create(immer(...))` 创建
+- 所有方法接收 `hookState = null` 参数
+- 成功时更新state，返回 `{ success, data }`
+- 失败时返回 `{ success, message }`
+- 复杂操作用try/catch包装
+
+**模板示例**:
+```js
+const useStore = create(immer((set, get) => ({
+  items: [],
+  
+  fetchItems: async (hookState = null) => {
+    const { success, data } = await apiModule.getItems({}, hookState);
+    if (success) set(state => { state.items = data; });
+    return { success, data };
+  }
+})));
+```
