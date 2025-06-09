@@ -6,6 +6,13 @@
 - 参数: `{ data, params, queries, headers }` (遵循Zodios RequestOptions)
 - 返回: `{ success, data, error, message }`
 
+**API状态钩子**:
+- 导入: `import createAPIStateHook from "@/hooks/apiHooks"`
+- 使用: `const apiState = createAPIStateHook()`
+- 默认字段: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
+- 更新: `apiState.set(state => { state.field = value })`
+- 传递: 将apiState作为参数传递给Store方法用于管理请求状态
+
 **Store要求**:
 - 使用 `create(immer(...))` 创建
 - 所有方法接收 `hookState = null` 参数
@@ -13,8 +20,34 @@
 - 失败时返回 `{ success, message }`
 - 复杂操作用try/catch包装
 
+**业务流程Hook**:
+- 为每个主要实体创建专用Hook (如 `useEntityManagement`)
+- Hook应封装完整业务流程而非原子操作
+- 集成状态管理和错误处理，减少页面代码量
+- 示例格式:
+  ```js
+  const useEntityManagement = () => {
+    const store = useStore();
+    const [entities, setEntities] = useState([]);
+    const [loading, setLoading] = useState(false);
+    
+    // 封装完整业务流程
+    const createEntityWithRelations = async (data, relations, hookState) => {
+      // 处理整个创建流程，包括关联关系
+    };
+    
+    return { 
+      entities,
+      loading,
+      createEntityWithRelations,
+      // 其他业务流程方法...
+    };
+  };
+  ```
+
 **模板示例**:
 ```js
+// 基础Store
 const useStore = create(immer((set, get) => ({
   items: [],
   
@@ -24,4 +57,39 @@ const useStore = create(immer((set, get) => ({
     return { success, data };
   }
 })));
+
+// 业务流程Hook
+const useItemManagement = () => {
+  const store = useStore();
+  const apiState = createAPIStateHook();
+  
+  // 封装业务状态
+  const [activeItem, setActiveItem] = useState(null);
+  
+  // 加载数据
+  useEffect(() => {
+    store.fetchItems(apiState);
+  }, []);
+  
+  // 完整业务流程
+  const processItemWithMedia = async (item, mediaFile) => {
+    if (mediaFile) {
+      const { success, data } = await store.getMediaUrl(mediaFile.path, apiState);
+      if (success) {
+        item.mediaUrl = data.url;
+      }
+    }
+    return await store.createItem(item, apiState);
+  };
+  
+  return { 
+    items: store.items,
+    loading: apiState.loading,
+    error: apiState.error,
+    message: apiState.message,
+    processItemWithMedia,
+    activeItem,
+    setActiveItem
+  };
+};
 ```
