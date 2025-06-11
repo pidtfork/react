@@ -1,0 +1,46 @@
+# shadcn/ui 组件封装规范
+
+## 设计理念
+保持shadcn/ui的组合式API特性，进行最小化封装，仅提取常见业务场景所需的参数。
+
+## 目录结构
+```
+src/components/
+├── ui/           # shadcn/ui 原生组件
+├── confirm-dialog.jsx
+├── data-table.jsx
+└── ... 
+```
+
+## 命名规范
+- 使用短横线命名法: `confirm-dialog.jsx`
+- 直接放置在 components 目录下
+- 导出使用帕斯卡命名法: `export function ConfirmDialog`
+
+## 组件设计规范
+
+### 组合式API优先
+- 保持shadcn/ui的组合式API设计风格
+- 使用子组件组合而非props传递复杂内容
+- 使用`asChild`属性支持自定义触发元素
+
+### 双模式设计原则
+- 支持受控和非受控两种模式
+- 受控模式：通过`open`和`onOpenChange`外部控制状态
+- 非受控模式：组件内部管理状态，提供合理的默认行为
+- 实现方式：内部状态+受控检测，自动切换模式
+
+### Props设计原则
+- 简洁为主，只暴露必要参数
+- 提供合理默认值
+- 明确的回调函数命名: `onConfirm`, `onCancel` 等
+- 所有参数尽量设计为可选，减少使用门槛
+
+### 避免的设计
+- 避免过度封装，保持组件的灵活性
+- 避免引入不必要的复杂状态管理
+
+## 代码风格
+- 组件函数使用命名导出: `export function ConfirmDialog()`
+- 默认值使用参数默认值语法: `title = ""`
+- JSDoc提供完整的参数说明
