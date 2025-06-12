@@ -107,8 +107,9 @@ const defaultConfigContent = `function use(zodiosClient) {
 }
 
 export default {
-  BASE_URL: "/",
-  apiPerfix: {},
+  BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  // 文件名:前缀
+  apiPrefix: {},
   config: {
     // zodios 配置选项
     // timeout: 10000,
@@ -281,15 +282,16 @@ async function generateApiIndex(successFiles) {
   
   // 生成 endpoints 数组
   const endpointsEntries = apiModules
-    .map(module => `  ...(config.apiPerfix.${module.varName} ? mergeApis({ [config.apiPerfix.${module.varName}]: ${module.varName}Api }) : makeApi(${module.varName}Api)),`)
+    .map(module => `  ...(config.apiPrefix.${module.varName} ? mergeApis({ [config.apiPrefix.${module.varName}]: ${module.varName}Api }) : makeApi(${module.varName}Api)),`)
     .join('\n');
   
   // 生成 API 导出对象
   const apiExports = [];
   for (const module of apiModules) {
     if (module.endpoints.length > 0) {
+      apiExports.push(`const ${module.varName}Prefix = config.apiPrefix.${module.varName} ? config.apiPrefix.${module.varName}: "";`);
       const methods = module.endpoints
-        .map(endpoint => `  ${endpoint.alias}: createApiMethod("${endpoint.method}", "${endpoint.path}"),`)
+        .map(endpoint => `  ${endpoint.alias}: createApiMethod("${endpoint.method}", ${module.varName}Prefix + "${endpoint.path}"),`)
         .join('\n');
       
       apiExports.push(`export const ${module.varName} = {\n${methods}\n};`);
