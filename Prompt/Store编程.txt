@@ -1,4 +1,4 @@
-请基于以下API规范编写Zustand Store:
+请基于以下API规范编写JavaScript的Zustand Store:
 
 **API调用规范**:
 - 导入: `import { apiModule, batch } from "@/api"` (apiModule为OpenAPI文件名)

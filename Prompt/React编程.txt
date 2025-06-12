@@ -1,6 +1,8 @@
 请基于以下规范编写React:
 
 **架构原则**:
+- 使用jsx语法
+- 注释和提示等内容优先使用中文
 - 永远不直接调用API，只调用Store方法
 - 使用 `createAPIStateHook()` 管理请求状态, 可传入自定义字段
 - 调用Store方法时可传入状态钩子: `store.method(data, apiState)`
