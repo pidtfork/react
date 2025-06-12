@@ -107,7 +107,7 @@ const defaultConfigContent = `function use(zodiosClient) {
 }
 
 export default {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  BASE_URL: import.meta.env.VITE_API_URL,
   // 文件名:前缀
   apiPrefix: {},
   config: {
