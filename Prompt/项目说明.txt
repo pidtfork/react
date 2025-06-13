@@ -1,4 +1,11 @@
-**技术栈** 
+# 项目说明
+
+##开发流程
+- API优先: 基于OpenAPI规范驱动开发
+- 代码生成: 使用openapi-zod-client工具生成API客户端
+- 开发顺序: OpenAPI → Store → 页面组件
+
+## 技术栈 
 - 构建工具：Vite 6.x
 - 前端框架：React 19.x
 - 路由管理：Wouter 3.x
@@ -9,25 +16,25 @@
 - 工具库：
   - class-variance-authority：条件样式管理
   - clsx & tailwind-merge：类名合并
-  - lucide-react：图标库
+  - lucide-react：0.511.x 图标库
 
-**项目结构**
+## 项目结构
 ```
 ├── src/
-│   ├── api/          # API 接口和请求配置
+│   ├── api/          # API 接口和请求配置（自动生成）
 │   ├── assets/       # 静态资源文件
 │   ├── components/   # 公共组件
-│   ├── hooks/        # 自定义 Hooks
+│   ├── hooks/        # 自定义Hooks
 │   ├── lib/          # 工具函数库
 │   ├── pages/        # 页面组件
 │   ├── routes/       # 路由配置
 │   ├── stores/       # 状态管理
-│   ├── App.jsx       # 应用入口布局页面
+│   ├── App.jsx       # 应用入口布局
 │   └── main.jsx      # 应用入口文件
 ```
 
-**shadcn-ui组件全览**
-- shadcn已经移除了Toast组件
+## shadcn-ui组件全览
+shadcn已经移除了Toast组件，当前可用组件
 ```
 $ tree ./src/components/ui
 ./src/components/ui

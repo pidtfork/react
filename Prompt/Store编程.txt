@@ -1,95 +1,102 @@
-请基于以下API规范编写JavaScript的Zustand Store:
+# Zustand Store 编程规范
 
-**API调用规范**:
-- 导入: `import { apiModule, batch } from "@/api"` (apiModule为OpenAPI文件名)
-- 调用: `await apiModule.methodName(requestOptions, hookState)`
-- 参数: `{ data, params, queries, headers }` (遵循Zodios RequestOptions)
-- 返回: `{ success, data, error, message }`
+## API调用规范
+- **导入**: `import { apiModule, batch } from "@/api"` (apiModule为OpenAPI文件名)
+- **调用**: `await apiModule.methodName(requestOptions, hookState)` (methodName为OpenAPI文件中的operationId)
+- **参数**: `{ data, params, queries, headers }` (遵循Zodios RequestOptions)
+- **返回**: `{ success, data, error, message }`
 
-**API状态钩子**:
-- 导入: `import createAPIStateHook from "@/hooks/apiHooks"`
-- 使用: `const apiState = createAPIStateHook()`
-- 默认字段: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
-- 更新: `apiState.set(state => { state.field = value })`
-- 传递: 将apiState作为参数传递给Store方法用于管理请求状态
+## API状态钩子
+- **导入**: `import createAPIStateHook from "@/hooks/apiHooks"`
+- **使用**: `const apiState = createAPIStateHook()`
+- **默认字段**: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
+- **更新**: `apiState.set(state => { state.field = value })`
+- **传递**: 将apiState作为参数传递给Store方法用于管理请求状态
 
-**Store要求**:
+## API调用分配原则
+
+### Store中实现
+- 跨页面共享数据的API
+- 全局状态相关的API
+- 复杂业务逻辑的API
+- 需要缓存的API
+
+### 页面组件中调用
+- 单页面临时数据的API
+- 简单一次性操作的API
+
+### 判断规则
+边界情况优先放Store
+
+## Store实现要求
 - 使用 `create(immer(...))` 创建
+- 所有状态字段设置合理默认值，避免undefined错误
 - 所有方法接收 `hookState = null` 参数
 - 成功时更新state，返回 `{ success, data }`
 - 失败时返回 `{ success, message }`
 - 复杂操作用try/catch包装
+- Store本身就是业务逻辑的封装，方法即业务Hook
 
-**业务流程Hook**:
-- 为每个主要实体创建专用Hook (如 `useEntityManagement`)
-- Hook应封装完整业务流程而非原子操作
-- 集成状态管理和错误处理，减少页面代码量
-- 示例格式:
-  ```js
-  const useEntityManagement = () => {
-    const store = useStore();
-    const [entities, setEntities] = useState([]);
-    const [loading, setLoading] = useState(false);
-    
-    // 封装完整业务流程
-    const createEntityWithRelations = async (data, relations, hookState) => {
-      // 处理整个创建流程，包括关联关系
-    };
-    
-    return { 
-      entities,
-      loading,
-      createEntityWithRelations,
-      // 其他业务流程方法...
-    };
-  };
-  ```
+## 模板示例
 
-**模板示例**:
 ```js
-// 基础Store
-const useStore = create(immer((set, get) => ({
-  items: [],
-  
-  fetchItems: async (hookState = null) => {
-    const { success, data } = await apiModule.getItems({}, hookState);
-    if (success) set(state => { state.items = data; });
+// userStore.js
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import { userApi } from "@/api";
+
+export const useUserStore = create(immer((set, get) => ({
+  // 状态定义 - 设置合理默认值
+  userInfo: null,
+  userList: [],
+
+  // 登录方法
+  async login(credentials, hookState = null) {
+    const { success, data } = await userApi.login({ data: credentials }, hookState);
+    if (success) {
+      set(state => { state.userInfo = data.user; });
+    }
     return { success, data };
+  },
+
+  // 获取用户列表
+  async fetchUserList(params = {}, hookState = null) {
+    const { success, data } = await userApi.getUserList({ queries: params }, hookState);
+    if (success) {
+      set(state => { state.userList = data.list; });
+    }
+    return { success, data };
+  },
+
+  // 业务流程：创建用户并刷新列表
+  async createAndRefresh(userData, hookState = null) {
+    const { success } = await userApi.createUser({ data: userData }, hookState);
+    if (success) {
+      await get().fetchUserList({}, hookState);
+    }
+    return { success };
   }
 })));
 
-// 业务流程Hook
-const useItemManagement = () => {
-  const store = useStore();
+// 页面使用示例
+const UserPage = () => {
+  const { userList, login, createAndRefresh } = useUserStore();
   const apiState = createAPIStateHook();
   
-  // 封装业务状态
-  const [activeItem, setActiveItem] = useState(null);
-  
-  // 加载数据
-  useEffect(() => {
-    store.fetchItems(apiState);
-  }, []);
-  
-  // 完整业务流程
-  const processItemWithMedia = async (item, mediaFile) => {
-    if (mediaFile) {
-      const { success, data } = await store.getMediaUrl(mediaFile.path, apiState);
-      if (success) {
-        item.mediaUrl = data.url;
-      }
-    }
-    return await store.createItem(item, apiState);
+  const handleLogin = async (credentials) => {
+    await login(credentials, apiState);
   };
   
-  return { 
-    items: store.items,
-    loading: apiState.loading,
-    error: apiState.error,
-    message: apiState.message,
-    processItemWithMedia,
-    activeItem,
-    setActiveItem
+  const handleCreate = async (userData) => {
+    await createAndRefresh(userData, apiState);
   };
+  
+  return (
+    <div>
+      {apiState.loading && <div>加载中...</div>}
+      {apiState.error && <div>错误: {apiState.message}</div>}
+      {/* 页面内容 */}
+    </div>
+  );
 };
 ```

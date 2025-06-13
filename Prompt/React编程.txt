@@ -1,18 +1,22 @@
-请基于以下规范编写React:
+# React 编程规范
 
-**架构原则**:
-- 使用jsx语法
-- 注释和提示等内容优先使用中文
-- 永远不直接调用API，只调用Store方法
-- 使用 `createAPIStateHook()` 管理请求状态, 可传入自定义字段
-- 调用Store方法时可传入状态钩子: `store.method(data, apiState)`
+## 架构原则
+- 使用JSX语法
+- 注释和提示优先使用中文
+- 根据业务场景选择Store方法或直接调用API
+- 不要使用`lucide-react`中已移除和不存在的图标
+- 使用 `createAPIStateHook()` 管理请求状态
+- 调用时传入状态钩子: `store.method(data, apiState)` 或 `apiModule.method(options, apiState)`
 
-**状态钩子**:
+## API状态钩子
 - 导入: `import createAPIStateHook from "@/hooks/apiHooks"`
 - 默认字段: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
 - 更新: `apiState.set(state => { state.field = value })`
+- 自定义字段: `createAPIStateHook({ customField: defaultValue })`
 
-**状态钩子组件模板**:
+## 组件模板
+
+### 基础模板
 ```js
 function Component() {
   const store = useStore();
@@ -21,7 +25,7 @@ function Component() {
   const handleAction = async () => {
     const { success } = await store.methodName(data, apiState);
     if (success) {
-      // 成功处理
+      // 成功处理逻辑
     }
   };
   
@@ -32,92 +36,6 @@ function Component() {
       </button>
       {apiState.error && <div>错误: {apiState.message}</div>}
     </div>
-  );
-}
-```
-
-**封装组件使用示例**:
-
-**ConfirmAlertDialog 参数说明**:
-- `children`: 触发对话框的元素（必填）
-- `open`: 控制对话框是否打开（可选，受控模式）
-- `onOpenChange`: 对话框打开状态变化时的回调函数（可选，受控模式）
-- `title`: 对话框标题（可选）
-- `description`: 对话框描述内容（可选）
-- `confirmText`: 确认按钮文本（默认："确认"）
-- `cancelText`: 取消按钮文本（默认："取消"）
-- `onConfirm`: 点击确认按钮时的回调函数（可选）
-- `onCancel`: 点击取消按钮时的回调函数（可选）
-- `confirmProps`: 确认按钮的额外属性（可选）
-- `cancelProps`: 取消按钮的额外属性（可选）
-
-```js
-import { Button } from "@/components/ui/button";
-import { ConfirmAlertDialog } from "@/components/confirm-alert-dialog";
-import { useState } from "react";
-import { useStore } from "@/stores/store";
-import createAPIStateHook from "@/hooks/apiHooks";
-
-function DeleteUserComponent({ userId }) {
-  const store = useStore();
-  const apiState = createAPIStateHook();
-  const [open, setOpen] = useState(false);
-  
-  const handleDelete = async () => {
-    const { success } = await store.deleteUser(userId, apiState);
-    if (success) {
-      setOpen(false);
-      // 其他成功处理
-    }
-  };
-  
-  return (
-    <ConfirmAlertDialog
-      open={open}
-      onOpenChange={setOpen}
-      title="删除用户"
-      description="确定要删除此用户吗？此操作不可撤销。"
-      confirmText="删除"
-      cancelText="取消"
-      onConfirm={handleDelete}
-      confirmProps={{ variant: "destructive" }}
-    >
-      <Button variant="destructive" disabled={apiState.loading}>
-        {apiState.loading ? "处理中..." : "删除用户"}
-      </Button>
-    </ConfirmAlertDialog>
-  );
-}
-```
-
-**非受控模式示例**:
-
-```js
-import { Button } from "@/components/ui/button";
-import { ConfirmAlertDialog } from "@/components/confirm-alert-dialog";
-import { useStore } from "@/stores/store";
-import createAPIStateHook from "@/hooks/apiHooks";
-
-function SimpleDeleteButton({ userId }) {
-  const store = useStore();
-  const apiState = createAPIStateHook();
-  
-  const handleDelete = async () => {
-    return await store.deleteUser(userId, apiState);
-  };
-  
-  return (
-    <ConfirmAlertDialog
-      title="确认删除"
-      description="此操作不可撤销，是否继续？"
-      confirmText="删除"
-      onConfirm={handleDelete}
-      confirmProps={{ variant: "destructive" }}
-    >
-      <Button variant="outline" size="sm">
-        删除
-      </Button>
-    </ConfirmAlertDialog>
   );
 }
 ```
