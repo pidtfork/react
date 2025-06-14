@@ -43,7 +43,7 @@
 // userStore.js
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { userApi } from "@/api";
+import { user } from "@/api"; // user 为OpenAPI文件名
 
 export const useUserStore = create(immer((set, get) => ({
   // 状态定义 - 设置合理默认值
@@ -52,7 +52,7 @@ export const useUserStore = create(immer((set, get) => ({
 
   // 登录方法
   async login(credentials, hookState = null) {
-    const { success, data } = await userApi.login({ data: credentials }, hookState);
+    const { success, data } = await user.login({ data: credentials }, hookState);
     if (success) {
       set(state => { state.userInfo = data.user; });
     }
@@ -61,7 +61,7 @@ export const useUserStore = create(immer((set, get) => ({
 
   // 获取用户列表
   async fetchUserList(params = {}, hookState = null) {
-    const { success, data } = await userApi.getUserList({ queries: params }, hookState);
+    const { success, data } = await user.getUserList({ queries: params }, hookState);
     if (success) {
       set(state => { state.userList = data.list; });
     }
@@ -70,7 +70,7 @@ export const useUserStore = create(immer((set, get) => ({
 
   // 业务流程：创建用户并刷新列表
   async createAndRefresh(userData, hookState = null) {
-    const { success } = await userApi.createUser({ data: userData }, hookState);
+    const { success } = await user.createUser({ data: userData }, hookState);
     if (success) {
       await get().fetchUserList({}, hookState);
     }

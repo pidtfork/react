@@ -5,14 +5,14 @@
 - 注释和提示优先使用中文
 - 根据业务场景选择Store方法或直接调用API
 - 不要使用`lucide-react`中已移除和不存在的图标
-- 使用 `createAPIStateHook()` 管理请求状态
-- 调用时传入状态钩子: `store.method(data, apiState)` 或 `apiModule.method(options, apiState)`
 
 ## API状态钩子
 - 导入: `import createAPIStateHook from "@/hooks/apiHooks"`
 - 默认字段: `loading, success, error, message, lastUpdated, statusCode, isTimeout, validationError, requestError, bodyError, responseError`
 - 更新: `apiState.set(state => { state.field = value })`
 - 自定义字段: `createAPIStateHook({ customField: defaultValue })`
+- 需要知道API请求状态时可使用 `createAPIStateHook()` 管理请求状态
+- 调用时传入状态钩子: `store.method(data, apiState)` 或 `apiModule.method(options, apiState)`
 
 ## 组件模板
 
