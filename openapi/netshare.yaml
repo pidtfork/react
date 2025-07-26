@@ -1,0 +1,208 @@
+openapi: 3.1.0
+info:
+  title: 网络文件分享系统
+  x-name: netshare
+  x-prefix: /api
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /server-info:
+    get:
+      summary: 获取服务器信息
+      operationId: getServerInfo
+      tags: [服务器]
+      responses:
+        "200":
+          description: 服务器信息
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerInfo"
+
+  /clipboard:
+    get:
+      summary: 获取剪贴板历史
+      operationId: getClipboard
+      tags: [剪贴板]
+      responses:
+        "200":
+          description: 剪贴板历史列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClipboardItem"
+
+    post:
+      summary: 保存剪贴板内容
+      operationId: saveClipboard
+      tags: [剪贴板]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+              required: [content]
+      responses:
+        "200":
+          description: 保存成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClipboardItem"
+
+  /clipboard/{id}:
+    delete:
+      summary: 删除剪贴板项目
+      operationId: deleteClipboard
+      tags: [剪贴板]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /files:
+    get:
+      summary: 获取文件列表
+      operationId: getFiles
+      tags: [文件]
+      responses:
+        "200":
+          description: 文件列表
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileItem"
+
+  /files/upload:
+    post:
+      summary: 上传文件
+      operationId: uploadFile
+      tags: [文件]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FileItem"
+
+  /files/{id}:
+    delete:
+      summary: 删除文件
+      operationId: deleteFile
+      tags: [文件]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /files/{id}/download:
+    get:
+      summary: 下载文件
+      operationId: downloadFile
+      tags: [文件]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 文件内容
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+components:
+  schemas:
+    ServerInfo:
+      type: object
+      properties:
+        ip:
+          type: string
+          format: ipv4
+          example: "192.168.1.100"
+        port:
+          type: integer
+          minimum: 1
+          maximum: 65535
+          example: 3000
+      required: [ip, port]
+
+    ClipboardItem:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        time:
+          type: string
+          format: date-time
+      required: [id, content, time]
+
+    FileItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        size:
+          type: integer
+        uploadTime:
+          type: string
+          format: date-time
+      required: [id, name, type, size, uploadTime]

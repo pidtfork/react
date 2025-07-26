@@ -1,241 +1,113 @@
-# React Base 项目
+# React
 
-这是一个基于 Vite + React 的现代化前端项目模板，集成了多个实用工具和最佳实践。
+基于 React 19 和 OpenAPI 规范的现代化前端应用开发框架。
 
-## 技术栈
+## 项目概述
 
-- **构建工具：** Vite 6.x
-- **前端框架：** React 19.x
-- **路由管理：** Wouter 3.x
-- **状态管理：** Zustand 5.x
-- **数据请求：** Zodios/core 10.9.x
-- **样式解决方案：** TailwindCSS 4.x
-- **UI组件：** shadcn/ui 2.5.x
-- **工具库：** 
-  - class-variance-authority：条件样式管理
-  - clsx & tailwind-merge：类名合并
-  - lucide-react：图标库
+本项目采用最新的前端技术栈，通过 OpenAPI 规范驱动的开发模式，实现了从 API 定义到前端代码的自动化生成。项目强调开发效率和代码质量，通过自动化工具链减少重复工作，让开发者专注于业务逻辑实现。
 
-## 项目结构
+## 技术特性
 
-```
-├── src/
-│   ├── api/          # API 接口和请求配置
-│   ├── assets/       # 静态资源文件
-│   ├── components/   # 公共组件
-│   ├── hooks/        # 自定义 Hooks
-│   ├── lib/          # 工具函数库
-│   ├── pages/        # 页面组件
-│   ├── routes/       # 路由配置
-│   ├── stores/       # 状态管理
-│   ├── App.jsx       # 应用入口布局页面
-│   └── main.jsx      # 应用入口文件
-```
+### 核心架构
 
-## 环境变量配置
+项目基于 React 19 和 Vite 6 构建，采用 TailwindCSS 4 作为样式解决方案，集成了 shadcn/ui 组件库提供丰富的 UI 组件。状态管理使用 Zustand 5 配合 immer 中间件，确保状态更新的不可变性。路由方案选择轻量级的 Wouter 3。
 
-项目使用 `.env` 文件进行环境变量配置：
+### 开发流程
 
-```bash
-# 开发环境 (.env.development)
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_APP_TITLE=Dev App
+项目采用 API 优先的开发模式。开发者首先编写 OpenAPI 3.1.0 规范文件，通过自动化工具生成类型安全的 API 调用代码。生成的代码包含了 AJV 数据验证，确保运行时数据的正确性。这种方式保证了前后端接口的一致性，大幅减少了接口联调的工作量。
 
-# 生产环境 (.env.production)
-VITE_API_BASE_URL=https://api.production.com
-VITE_APP_TITLE=Production App
+### 代码组织
 
-# 预发环境 (.env.staging)
-VITE_API_BASE_URL=https://api.staging.com
-VITE_APP_TITLE=Staging App
-```
+项目采用清晰的目录结构，将页面组件、业务组件、UI 组件、状态管理和 API 调用代码分离。通过自动化路由生成工具，页面组件能够自动映射为应用路由。项目制定了严格的代码规范，包括组件大小限制、命名规范和文件组织方式，确保代码的可维护性。
 
-注意：只有 `VITE_` 前缀的变量会被暴露给客户端代码。
+## 快速开始
 
-## 开发指南
+### 环境要求
 
-### 作为模板新建项目
-
-degit 它的名字是 "de-git" 的缩写，意为“去 Git 化”。
-
-它的主要目的是：从一个 Git 仓库下载文件，但不包括该仓库的 .git 历史记录。 换句话说，它只下载仓库的最新快照（也就是当前版本的文件内容）。
-
-```bash
-# my-new-project 为新项目名称
-npm install -g degit
-degit pidtfork/react my-new-project
-# or
-npx degit pidtfork/react my-new-project
-```
+- Node.js 18.0 或更高版本
+- pnpm 8.0 或更高版本
 
 ### 安装依赖
 
 ```bash
+git clone https://github.com/pidtfork/react
+cd react
 pnpm install
 ```
 
-### 更新路由配置
+### 开发流程
+
+首先，在 `openapi` 目录下创建或修改 OpenAPI 规范文件：
 
 ```bash
-pnpm route
-```
-
-### 根据openapi文件生成api代码
-
-```bash
+# 生成 API 代码
 pnpm openapi
-```
 
-### 添加shadcn组件
-
-```bash
-pnpm dlx shadcn@latest add button
-```
-
-### 添加全部最新shadcn组件
-
-```bash
-pnpm dlx shadcn@latest add --all --overwrite
-```
-
-
-### 启动开发服务器
-
-```bash
+# 启动开发服务器
 pnpm dev
 ```
 
-### 构建生产版本
+开发服务器会自动生成路由配置并启动应用。如果需要使用模拟数据进行开发：
 
 ```bash
-pnpm build
+# 在新的终端窗口启动 mock 服务
+pnpm mock
 ```
 
-### 预览生产构建
+### 构建部署
 
 ```bash
+# 构建生产版本
+pnpm build
+
+# 预览生产构建
 pnpm preview
 ```
 
-## shadcn-ui组件全览
+## 项目结构
 
-- shadcn已经移除了Toast组件
-
-```bash
-$ tree ./src/components/ui
-./src/components/ui
-|-- accordion.jsx
-|-- alert-dialog.jsx
-|-- alert.jsx
-|-- aspect-ratio.jsx
-|-- avatar.jsx
-|-- badge.jsx
-|-- breadcrumb.jsx
-|-- button.jsx
-|-- calendar.jsx
-|-- card.jsx
-|-- carousel.jsx
-|-- chart.jsx
-|-- checkbox.jsx
-|-- collapsible.jsx
-|-- command.jsx
-|-- context-menu.jsx
-|-- dialog.jsx
-|-- drawer.jsx
-|-- dropdown-menu.jsx
-|-- form.jsx
-|-- hover-card.jsx
-|-- input-otp.jsx
-|-- input.jsx
-|-- label.jsx
-|-- menubar.jsx
-|-- navigation-menu.jsx
-|-- pagination.jsx
-|-- popover.jsx
-|-- progress.jsx
-|-- radio-group.jsx
-|-- resizable.jsx
-|-- scroll-area.jsx
-|-- select.jsx
-|-- separator.jsx
-|-- sheet.jsx
-|-- sidebar.jsx
-|-- skeleton.jsx
-|-- slider.jsx
-|-- sonner.jsx
-|-- switch.jsx
-|-- table.jsx
-|-- tabs.jsx
-|-- textarea.jsx
-|-- toggle-group.jsx
-|-- toggle.jsx
-└-- tooltip.jsx
-
-0 directories, 46 files
+```
+.
+├── openapi/              # OpenAPI 规范文件
+├── src/
+│   ├── api/              # 自动生成的 API 调用代码
+│   ├── components/       # 组件库
+│   │   ├── common/       # 业务组件
+│   │   └── ui/           # UI 基础组件
+│   ├── pages/            # 页面组件
+│   ├── routes/           # 路由配置
+│   └── stores/           # 状态管理
+├── tool/                 # 构建工具脚本
+└── package.json
 ```
 
-## 特性
+## 开发指南
 
-- 🚀 基于 Vite 的快速开发和构建
-- 📦 开箱即用的 React 最佳实践
-- 🎨 集成 TailwindCSS 的现代化样式解决方案
-- 🔄 Axios 的数据请求方案
-- 📱 响应式设计支持
-- 🛠 完整的开发工具链和类型支持
-- 🌐 灵活的路由配置
-- 💾 简单高效的状态管理
+### API 开发
 
-## 路径别名
+在 `openapi` 目录下创建 YAML 格式的 OpenAPI 规范文件。运行 `pnpm openapi` 命令后，工具会自动生成对应的 API 调用函数和 React Hooks。生成的代码包含完整的类型定义和数据验证逻辑。
 
-项目配置了 `@` 路径别名，指向 `src` 目录，可以用于简化导入路径：
+### 页面开发
 
-```javascript
-import { Button } from '@/components/ui/button'
-```
+在 `src/pages` 目录下创建页面组件。页面组件会自动被路由系统识别并生成对应的路由配置。复杂页面可以创建同名目录，将子组件和相关逻辑文件组织在一起。
 
+### 状态管理
 
-## `assets` 和 `public` 的区别
-          
-在 React/Vite 项目中，`assets` 和 `public` 文件夹都用于存放静态资源，但它们有以下主要区别：
+对于需要跨页面共享的状态或复杂的业务逻辑，在 `src/stores` 目录下创建对应的 Store。Store 使用 Zustand 和 immer 实现，提供简洁的 API 和不可变状态更新。
 
-1. 构建处理方式：
-   - `assets` 文件夹中的文件会经过 Vite 的构建处理：
-     - 会被打包和优化（如压缩、hash命名等）
-     - 支持模块导入（可以通过 import 语句引入）
-     - 适合需要被构建工具处理的资源（如 SVG、图片等）
+## 可用脚本
 
-   - `public` 文件夹中的文件会被原样复制到构建目录：
-     - 不会经过任何构建处理
-     - 通过绝对路径访问（以 / 开头）
-     - 适合不需要处理的静态资源（如 robots.txt、favicon.ico 等）
+- `pnpm dev` - 启动开发服务器
+- `pnpm build` - 构建生产版本
+- `pnpm preview` - 预览生产构建
+- `pnpm openapi` - 根据 OpenAPI 规范生成 API 代码
+- `pnpm route` - 生成路由配置
+- `pnpm mock` - 启动 mock 服务器
 
-2. 使用场景：
-   - `assets` 适合：
-     - 需要在代码中 import 引用的资源
-     - 需要经过构建优化的资源
-     - 项目相关的图片、字体等资源
+## 相关文档
 
-   - `public` 适合：
-     - 不需要构建处理的文件
-     - 需要保持原始文件名的资源
-     - 需要通过绝对路径访问的文件
-     - 大型静态资源（如视频）
+详细的开发规范请参考 `项目开发规范.md` 文件。
 
-3. 引用方式：
-   - `assets` 中的文件：
-   ```javascript
-   import logo from '@/assets/logo.svg'
-   ```
+## 许可证
 
-   - `public` 中的文件：
-   ```html
-   <img src="/logo.png" />
-   <!-- 或者 -->
-   <link rel="icon" href="/favicon.ico" />
-   ```
-
-建议：
-- 优先使用 `assets` 目录，让构建工具帮助优化资源
-- 只在必要时（如第三方静态资源、需要保持原始文件名）才使用 `public` 目录
-
-        
+GPL v3
